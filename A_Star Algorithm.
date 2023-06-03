@@ -1,0 +1,69 @@
+def a_star(graph, start_node, goal_node):
+    open_list = {start_node}
+    closed_list = set()
+
+    parent = {}
+    g_score = {node: float('inf') for node in graph}
+    f_score = {node: float('inf') for node in graph}
+
+    g_score[start_node] = 0
+    f_score[start_node] = heuristic[start_node]
+
+    while open_list:
+        current = min(open_list, key=lambda node: f_score[node])
+
+        if current == goal_node:
+            break
+
+        open_list.remove(current)
+        closed_list.add(current)
+
+        for neighbour in graph[current]:
+            neigh_g_score = g_score[current] + graph[current][neighbour]
+
+            if neighbour in closed_list or neigh_g_score >= g_score[neighbour]:
+                continue
+
+            parent[neighbour] = current
+            g_score[neighbour] = neigh_g_score
+            f_score[neighbour] = g_score[neighbour] + heuristic[neighbour]
+
+            if neighbour not in open_list:
+                open_list.add(neighbour)
+
+    path = []
+    current = goal_node
+
+    while current != start_node:
+        path.insert(0, current)
+        current = parent[current]
+
+    path.insert(0, start_node)
+    return path
+
+
+graph = {
+    'A': {'B': 5, 'C': 3},
+    'B': {'D': 2, 'E': 4},
+    'C': {'F': 6},
+    'D': {'G': 1},
+    'E': {'G': 3},
+    'F': {},
+    'G': {}
+}
+
+heuristic = {
+    'A': 10,
+    'B': 8,
+    'C': 7,
+    'D': 6,
+    'E': 5,
+    'F': 3,
+    'G': 0
+}
+
+start_node = 'A'
+goal_node = 'G'
+
+path = a_star(graph, start_node, goal_node)
+print("Path:", ' -> '.join(path))
